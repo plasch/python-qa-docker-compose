@@ -1,0 +1,33 @@
+version: "3.7" # https://docs.docker.com/compose/compose-file/
+
+services:
+  py_server_db:
+#    image: py_server
+    container_name: py_server_db
+    build:
+      context: py_server_db
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - test_net
+    volumes:
+      - test_vol:/app
+
+  tests:
+#    image: py_server_tests
+    container_name: py_server_tests
+    build:
+      context: tests
+      dockerfile: Dockerfile
+    command: pytest -v --url http://py_server_db:8080
+    depends_on:
+      - py_server_db
+    networks:
+      - test_net
+
+networks:
+  test_net:
+
+volumes:
+  test_vol:
